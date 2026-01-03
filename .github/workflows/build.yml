@@ -11,13 +11,20 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
+            vscode_arch: x64
             platform: linux
-          - os: macos-latest
+          - os: macos-13
+            vscode_arch: x64
             platform: darwin
+          - os: macos-14
+            vscode_arch: arm64
+            platform: darwin-arm64
           - os: windows-latest
+            vscode_arch: x64
             platform: win32
 
     runs-on: ${{ matrix.os }}
@@ -37,53 +44,83 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies (Linux)
-        if: matrix.platform == 'linux'
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev rpm fakeroot
+          sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev \
+            rpm fakeroot dpkg libkrb5-dev
 
       - name: Clone VSCodium
-        run: |
-          git clone --depth 1 https://github.com/VSCodium/vscodium.git vscodium-src
+        run: git clone --depth 1 https://github.com/VSCodium/vscodium.git vscodium-src
 
       - name: Apply CodexFlow branding
+        run: python3 scripts/apply-branding.py
+
+      - name: Prepare VSCodium build
+        working-directory: vscodium-src
+        shell: bash
         run: |
-          python3 scripts/apply-branding.py
+          export SHOULD_BUILD="yes"
+          export VSCODE_ARCH="${{ matrix.vscode_arch }}"
+          export OS_NAME="${{ matrix.platform }}"
+          ./get_repo.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build VSCodium
         working-directory: vscodium-src
-        run: |
-          ./get_repo.sh
-          ./build.sh
+        shell: bash
+        run: ./build.sh
         env:
           SHOULD_BUILD: 'yes'
-          CI_BUILD: 'yes'
+          VSCODE_ARCH: ${{ matrix.vscode_arch }}
           OS_NAME: ${{ matrix.platform }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List build outputs
+        shell: bash
+        run: |
+          echo "=== Build outputs ==="
+          find vscodium-src -name "*.deb" -o -name "*.rpm" -o -name "*.dmg" -o -name "*.exe" -o -name "*.zip" -o -name "*.tar.gz" 2>/dev/null | head -20 || true
+          ls -la vscodium-src/VSCode-* 2>/dev/null || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: codexflow-${{ matrix.platform }}
-          path: vscodium-src/VSCode-*
+          name: codexflow-${{ matrix.platform }}-${{ matrix.vscode_arch }}
+          path: |
+            vscodium-src/*.deb
+            vscodium-src/*.rpm
+            vscodium-src/*.dmg
+            vscodium-src/*.exe
+            vscodium-src/*.zip
+            vscodium-src/*.tar.gz
+            vscodium-src/VSCode-*
           retention-days: 30
+          if-no-files-found: warn
 
   release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display artifacts
+        run: find artifacts -type f | head -50
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            codexflow-linux/*
-            codexflow-darwin/*
-            codexflow-win32/*
+          files: artifacts/**/*
           draft: false
           prerelease: false
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
