@@ -1,0 +1,20 @@
+# Build outputs
+vscodium-src/
+VSCode-*/
+*.dmg
+*.deb
+*.rpm
+*.exe
+*.zip
+*.tar.gz
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp

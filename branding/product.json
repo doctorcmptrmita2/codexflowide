@@ -1,0 +1,20 @@
+{
+  "nameShort": "CodexFlow",
+  "nameLong": "CodexFlow IDE",
+  "applicationName": "codexflow",
+  "dataFolderName": ".codexflow",
+  "win32MutexName": "codexflow",
+  "win32DirName": "CodexFlow",
+  "win32NameVersion": "CodexFlow",
+  "win32AppUserModelId": "CodexFlow.CodexFlow",
+  "win32x64UserAppId": "{{47A2A0C7-4E8E-4B8A-8D5A-1C2D3E4F5A6B}",
+  "darwinBundleIdentifier": "com.codexflow.ide",
+  "linuxIconName": "codexflow",
+  "licenseFileName": "LICENSE.txt",
+  "licenseName": "MIT",
+  "licenseUrl": "https://github.com/codexflow/codexflow-ide/blob/main/LICENSE",
+  "reportIssueUrl": "https://github.com/codexflow/codexflow-ide/issues/new",
+  "urlProtocol": "codexflow",
+  "extensionAllowedProposedApi": [],
+  "builtInExtensions": []
+}

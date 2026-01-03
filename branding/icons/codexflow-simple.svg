@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Solid background for simpler rendering -->
+  <rect width="512" height="512" rx="96" fill="#6366f1"/>
+  
+  <!-- Code brackets -->
+  <g fill="none" stroke="#ffffff" stroke-width="36" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="175,150 85,256 175,362"/>
+    <polyline points="337,150 427,256 337,362"/>
+  </g>
+  
+  <!-- X in center (representing code/flow) -->
+  <g fill="none" stroke="#22d3ee" stroke-width="28" stroke-linecap="round">
+    <line x1="220" y1="200" x2="292" y2="312"/>
+    <line x1="292" y1="200" x2="220" y2="312"/>
+  </g>
+</svg>

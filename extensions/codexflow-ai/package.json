@@ -1,0 +1,120 @@
+{
+  "name": "codexflow-ai",
+  "displayName": "CodexFlow AI Assistant",
+  "description": "LiteLLM destekli AI kod asistanı",
+  "version": "1.0.0",
+  "publisher": "codexflow",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other", "Machine Learning"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "codexflow.chat",
+        "title": "CodexFlow: AI Chat Aç"
+      },
+      {
+        "command": "codexflow.explain",
+        "title": "CodexFlow: Kodu Açıkla"
+      },
+      {
+        "command": "codexflow.refactor",
+        "title": "CodexFlow: Kodu Refactor Et"
+      },
+      {
+        "command": "codexflow.generateTests",
+        "title": "CodexFlow: Test Oluştur"
+      },
+      {
+        "command": "codexflow.fixError",
+        "title": "CodexFlow: Hatayı Düzelt"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codexflow-ai",
+          "title": "CodexFlow AI",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "codexflow-ai": [
+        {
+          "type": "webview",
+          "id": "codexflow.chatView",
+          "name": "AI Chat"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CodexFlow AI",
+      "properties": {
+        "codexflow.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:4000",
+          "description": "LiteLLM API endpoint"
+        },
+        "codexflow.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API anahtarı"
+        },
+        "codexflow.model": {
+          "type": "string",
+          "default": "gpt-4",
+          "description": "Kullanılacak model"
+        },
+        "codexflow.maxTokens": {
+          "type": "number",
+          "default": 4096,
+          "description": "Maksimum token sayısı"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "codexflow.explain",
+          "group": "codexflow@1",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "codexflow.refactor",
+          "group": "codexflow@2",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "codexflow.fixError",
+          "group": "codexflow@3"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "codexflow.chat",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "openai": "^4.24.0"
+  }
+}
